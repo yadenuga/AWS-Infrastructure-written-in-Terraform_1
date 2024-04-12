@@ -159,3 +159,133 @@ resource "aws_route_table_association" "Dev_Private_Data_Subnet_RT_Ass2" {
   route_table_id = aws_route_table.Dev_Private_RT.id
 }
 
+# Create ALB Security Group
+resource "aws_security_group" "ALB-SG" {
+  name        = "ALB-SG"
+  description = "enable http/https access on port 80/443"
+  vpc_id      = aws_vpc.Dev-VPC.id
+
+  ingress {
+    description      = "http access"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description      = "https access"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "All-Outbound-Traffic-from-ALB"    
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags   = {
+    Name = "All-Outbound-Traffic-from-ALB"   
+  }
+}
+
+# Create SSH Security Group
+resource "aws_security_group" "SSH-SG" {
+  name        = "SSH-SG"
+  description = "enable http/https access on port 80/443"
+  vpc_id      = aws_vpc.Dev-VPC.id
+
+  ingress {
+    description      = "Inbound SSH traffic"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Outbound SSH traffic"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags   = {
+    Name = "SSH-SG"
+  }
+}
+
+# Create AppServer Security group
+resource "aws_security_group" "AppServer-SG" {
+  name        = "AppServer-SG"
+  description = "Enable http/https access on port 80/443 via ALB-SG and access on port 22 via SSH-SG"
+  vpc_id      = aws_vpc.Dev-VPC.id
+
+  ingress {
+    description      = "http access"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.ALB-SG.id]
+  }
+
+  ingress {
+    description      = "https access"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.ALB-SG.id]
+  }
+
+  ingress {
+    description      = "ssh access"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.SSH-SG.id]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags   = {
+    Name = "AppServer-SG"
+  }
+}
+
+# Create DataBase Security group
+resource "aws_security_group" "DB-SG" {
+  name        = "DB-SG"
+  description = "Enable mysql/aurora access on port 3306"
+  vpc_id      = aws_vpc.Dev-VPC.id
+
+  ingress {
+    description      = "Incoming AppServer traffic"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.AppServer-SG.id]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags   = {
+    Name = "DB-SG"
+  }
+}
+
