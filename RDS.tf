@@ -20,7 +20,6 @@ data "aws_db_snapshot" "latest_db_snapshot" {
   snapshot_type          = "manual"
 }
 
-
 # Create database instance restored from db snapshots
 # Terraform aws DB instance
 resource "aws_db_instance" "database_instance" {
