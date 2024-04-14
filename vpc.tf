@@ -190,7 +190,7 @@ resource "aws_security_group" "ALB-SG" {
   }
 
   tags   = {
-    Name = "All-Outbound-Traffic-from-ALB"   
+    Name = "ALB-SG"   
   }
 }
 
