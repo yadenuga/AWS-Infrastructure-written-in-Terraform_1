@@ -29,3 +29,10 @@ description = "Multi_AZ_Deployment"
 type        = bool
 
 }
+
+# Create SSL Certificate_arn
+variable "ssl_certificate_arn" {
+  default = "arn:aws:acm:us-east-1:730335572176:certificate/56538a5b-f3ca-4d94-8015-b5459956f6e3"
+  description = "Create SSL Certificate_arn"
+  type = string
+}
