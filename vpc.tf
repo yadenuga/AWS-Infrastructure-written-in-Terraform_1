@@ -357,3 +357,66 @@ resource "aws_lb" "ALB2" {
     aws_subnet.Public_subnet_AZ2.id
   ]
 }
+
+# Create Launch template
+resource "aws_launch_template" "Dev-LT" {
+  name = "Dev-LT"
+
+  iam_instance_profile {
+    name = "Dev-LT"
+  }
+
+  image_id = "ami-051f8a213df8bc089"
+
+  instance_initiated_shutdown_behavior = "terminate"
+
+  instance_type = "t2.micro"
+  key_name = 
+
+  monitoring {
+    enabled = true
+  }
+
+  vpc_security_group_ids = [aws_security_group.AppServer-SG.id]
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "Dev-LT"
+    }
+  }
+
+}
+
+# Create auto scaling group
+resource "aws_autoscaling_group" "Dev-ASG" {
+  vpc_zone_identifier = [aws_subnet.Private_App_Subnet_AZ1.id,aws_subnet.Private_App_Subnet_AZ2.id ]
+  desired_capacity    = 2
+  max_size            = 3
+  min_size            = 1
+  name                = "Dev-ASG"
+  health_check_type   = "ELB"
+
+  launch_template {
+    name    = aws_launch_template.Dev-LT.name
+    version = "$Latest"
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "Dev-ASG"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    ignore_changes      = [target_group_arns]
+  }
+}
+
+# Create ASG attachment to ALB
+resource "aws_autoscaling_attachment" "ASG_attachment" {
+  autoscaling_group_name = aws_autoscaling_group.Dev-ASG.id
+  lb_target_group_arn    = aws_lb_target_group.Dev-TG.arn
+}
+
