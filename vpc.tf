@@ -289,27 +289,6 @@ resource "aws_security_group" "DB-SG" {
   }
 }
 
-# Create application load balancer
-resource "aws_lb" "ALB2" {
-  name               = "ALB2"
-  internal           = "false"
-  load_balancer_type = application
-  security_groups    = "aws_security_group.ALB-SG"
-
-  subnet_mapping {
-    subnet_id = [aws_subnet.Public_subnet_AZ1.id]
-  }
-
-  subnet_mapping {
-    subnet_id = [aws_subnet.Public_subnet_AZ2.id]
-  }
-
-  enable_deletion_protection = false
-
-  tags   = {
-    Name = "ALB2"
-  }
-}
 
 # create Target group
 resource "aws_lb_target_group" "Dev-TG" {
@@ -364,4 +343,17 @@ resource "aws_lb_listener" "alb_https_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.Dev-TG.arn
   }
+}
+
+# Create ALB (Used MyALB code)                                                                                                                                                                                                                                                         
+resource "aws_lb" "ALB2" {
+  name               = "ALB2"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.ALB-SG.id]
+
+  subnets = [
+    aws_subnet.Public_subnet_AZ1.id,
+    aws_subnet.Public_subnet_AZ2.id
+  ]
 }
