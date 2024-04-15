@@ -359,17 +359,10 @@ resource "aws_lb" "ALB2" {
 }
 
 # Create Launch template
-resource "aws_launch_template" "Dev-LT" {
-  name = "Dev-LT"
-
-  iam_instance_profile {
-    name = "Dev-LT"
-  }
-
+resource "aws_launch_template" "dev-launch-template" {
+  name = "dev-launch-template"
   image_id = "ami-051f8a213df8bc089"
-
   instance_initiated_shutdown_behavior = "terminate"
-
   instance_type = "t2.micro"
   key_name = "terraform"
 
@@ -378,12 +371,11 @@ resource "aws_launch_template" "Dev-LT" {
   }
 
   vpc_security_group_ids = [aws_security_group.AppServer-SG.id]
-
   tag_specifications {
-    resource_type = "instance"
+  resource_type = "instance"
 
     tags = {
-      Name = "Dev-LT"
+      Name = "dev-launch-template"
     }
   }
 
@@ -399,7 +391,7 @@ resource "aws_autoscaling_group" "Dev-ASG" {
   health_check_type   = "ELB"
 
   launch_template {
-    name    = aws_launch_template.Dev-LT.name
+    name    = aws_launch_template.dev-launch-template.name
     version = "$Latest"
   }
 
