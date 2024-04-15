@@ -289,3 +289,79 @@ resource "aws_security_group" "DB-SG" {
   }
 }
 
+# Create application load balancer
+resource "aws_lb" "ALB2" {
+  name               = "ALB2"
+  internal           = "false"
+  load_balancer_type = application
+  security_groups    = "aws_security_group.ALB-SG"
+
+  subnet_mapping {
+    subnet_id = [aws_subnet.Public_subnet_AZ1.id]
+  }
+
+  subnet_mapping {
+    subnet_id = [aws_subnet.Public_subnet_AZ2.id]
+  }
+
+  enable_deletion_protection = false
+
+  tags   = {
+    Name = "ALB2"
+  }
+}
+
+# create Target group
+resource "aws_lb_target_group" "Dev-TG" {
+  name        = "Dev-TG"
+  target_type = "instance"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.Dev-VPC.id
+
+  health_check {
+    healthy_threshold   = 5
+    interval            = 30
+    matcher             = "200,301,302"
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+}
+
+# create a listener on port 80 with redirect action
+# terraform aws create listener
+resource "aws_lb_listener" "alb_http_listener" {
+  load_balancer_arn = aws_lb.ALB2.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      host        = "#{host}"
+      path        = "/#{path}"
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+# create a listener on port 443 with forward action
+# terraform aws create listener
+resource "aws_lb_listener" "alb_https_listener" {
+  load_balancer_arn  = aws_lb.ALB2.arn
+  port               = 443
+  protocol           = "HTTPS"
+  ssl_policy         = "ELBSecurityPolicy-2016-08"
+  certificate_arn    = "arn:aws:acm:us-east-1:730335572176:certificate/56538a5b-f3ca-4d94-8015-b5459956f6e3"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.Dev-TG.arn
+  }
+}
