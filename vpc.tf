@@ -316,7 +316,7 @@ resource "aws_security_group" "EICE-SG" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags =  {
-    Name = EICE-SG
+    Name = "EICE-SG"
 }
 }
 
