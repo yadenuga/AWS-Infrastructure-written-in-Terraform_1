@@ -25,7 +25,7 @@ data "aws_db_snapshot" "latest_db_snapshot" {
 resource "aws_db_instance" "database_instance" {
   instance_class          = var.DB_Instance_Class
   skip_final_snapshot     = true
-  availability_zone       = "us-east-1e"
+  availability_zone       = "us-east-1a"
   identifier              = var.DB_Indentifier
   snapshot_identifier     = data.aws_db_snapshot.latest_db_snapshot.id
   db_subnet_group_name    = aws_db_subnet_group.dev_db2_subnet_group.name
