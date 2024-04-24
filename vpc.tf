@@ -448,10 +448,10 @@ resource "aws_vpc_endpoint" "EC2_EndPoint" {
   vpc_endpoint_type = "Interface"
 
   security_group_ids = [
-    aws_security_group.EICE-SG.id, aws_security_group.SSH-SG.id, aws_security_group.SSH-SG.id 
+    aws_security_group.EICE-SG.id, aws_security_group.SSH-SG.id, aws_security_group.AppServer-SG.id 
   ]
 
-  subnet_ids          = [aws_subnet.Private_Data_Subnet_AZ1.id, aws_subnet.Private_Data_Subnet_AZ1.id]
+  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id, aws_subnet.Private_App_Subnet_AZ2.id]
   private_dns_enabled = true
 }
 
