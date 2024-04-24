@@ -274,6 +274,7 @@ resource "aws_security_group" "DB-SG" {
     from_port        = 3306
     to_port          = 3306
     protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
     security_groups  = [aws_security_group.AppServer-SG.id]
   }
 
@@ -289,6 +290,35 @@ resource "aws_security_group" "DB-SG" {
   }
 }
 
+# Create EC2 Endpoint Security group
+resource "aws_security_group" "EICE-SG" {
+  vpc_id = aws_vpc.Dev-VPC.id
+  ingress {
+    description = "HTTPS for Endpoint Interface"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP for Endpoint Interface"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags =  {
+    Name = EICE-SG
+}
+}
 
 # create Target group
 resource "aws_lb_target_group" "Dev-TG" {
@@ -410,5 +440,18 @@ resource "aws_autoscaling_group" "Dev-ASG" {
 resource "aws_autoscaling_attachment" "ASG_attachment" {
   autoscaling_group_name = aws_autoscaling_group.Dev-ASG.id
   lb_target_group_arn    = aws_lb_target_group.Dev-TG.arn
+}
+
+resource "aws_vpc_endpoint" "EC2_EndPoint" {
+  vpc_id            = aws_vpc.Dev-VPC.id
+  service_name      = "com.amazonaws.us-east-1.ec2"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.EICE-SG.id, aws_security_group.SSH-SG.id, aws_security_group.SSH-SG.id 
+  ]
+
+  subnet_ids          = [aws_subnet.Private_Data_Subnet_AZ1.id, aws_subnet.Private_Data_Subnet_AZ1.id]
+  private_dns_enabled = true
 }
 
