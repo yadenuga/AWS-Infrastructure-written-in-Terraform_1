@@ -58,7 +58,7 @@ resource "aws_subnet" "Public_subnet_AZ2" {
 resource "aws_subnet" "Private_App_Subnet_AZ1" {
   vpc_id            = aws_vpc.Dev-VPC.id
   cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1c"
+  availability_zone = "us-east-1a"
   tags = {
     Name = "Private_App_Subnet_AZ1"
   }
@@ -68,7 +68,7 @@ resource "aws_subnet" "Private_App_Subnet_AZ1" {
 resource "aws_subnet" "Private_App_Subnet_AZ2" {
   vpc_id            = aws_vpc.Dev-VPC.id
   cidr_block        = "10.0.3.0/24"
-  availability_zone = "us-east-1d"
+  availability_zone = "us-east-1b"
   tags = {
     Name = "Private_App_Subnet_AZ2"
   }
@@ -78,7 +78,7 @@ resource "aws_subnet" "Private_App_Subnet_AZ2" {
 resource "aws_subnet" "Private_Data_Subnet_AZ1" {
   vpc_id            = aws_vpc.Dev-VPC.id
   cidr_block        = "10.0.4.0/24"
-  availability_zone = "us-east-1e"
+  availability_zone = "us-east-1a"
   tags = {
     Name = "Private_Data_Subnet_AZ1"
   }
@@ -88,7 +88,7 @@ resource "aws_subnet" "Private_Data_Subnet_AZ1" {
 resource "aws_subnet" "Private_Data_Subnet_AZ2" {
   vpc_id            = aws_vpc.Dev-VPC.id
   cidr_block        = "10.0.5.0/24"
-  availability_zone = "us-east-1f"
+  availability_zone = "us-east-1b"
   tags = {
     Name = "Private_Data_Subnet_AZ2"
   }
