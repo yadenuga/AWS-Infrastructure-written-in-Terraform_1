@@ -293,27 +293,11 @@ resource "aws_security_group" "DB-SG" {
 # Create EC2 Endpoint Security group
 resource "aws_security_group" "EICE-SG" {
   vpc_id = aws_vpc.Dev-VPC.id
-  ingress {
-    description = "HTTPS for Endpoint Interface"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "HTTP for Endpoint Interface"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
   }
   tags =  {
     Name = "EICE-SG"
@@ -394,8 +378,7 @@ resource "aws_launch_template" "dev-launch-template" {
   image_id = "ami-051f8a213df8bc089"
   instance_initiated_shutdown_behavior = "terminate"
   instance_type = "t2.micro"
-  key_name = "terraform"
-
+  
   monitoring {
     enabled = true
   }
@@ -442,16 +425,16 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
   lb_target_group_arn    = aws_lb_target_group.Dev-TG.arn
 }
 
+
+# Create EC2 EndPoint
 resource "aws_vpc_endpoint" "EC2_EndPoint" {
   vpc_id            = aws_vpc.Dev-VPC.id
   service_name      = "com.amazonaws.us-east-1.ec2"
   vpc_endpoint_type = "Interface"
 
-  security_group_ids = [
-    aws_security_group.EICE-SG.id, aws_security_group.SSH-SG.id, aws_security_group.AppServer-SG.id 
-  ]
+  security_group_ids = [aws_security_group.EICE-SG.id]
 
-  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id, aws_subnet.Private_App_Subnet_AZ2.id]
-  private_dns_enabled = true
+  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id]
+  private_dns_enabled = false
 }
 
