@@ -434,7 +434,8 @@ resource "aws_vpc_endpoint" "EC2_EndPoint" {
 
   security_group_ids = [aws_security_group.EICE-SG.id]
 
-  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id]
+  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id, aws_subnet.Private_App_Subnet_AZ2.id,
+  aws_subnet.Private_Data_Subnet_AZ1.id, aws_subnet.Private_Data_Subnet_AZ2.id ]
   private_dns_enabled = false
 }
 
