@@ -430,7 +430,7 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
 resource "aws_vpc_endpoint" "EC2_EndPoint" {
   vpc_id            = aws_vpc.Dev-VPC.id
   service_name      = "com.amazonaws.us-east-1.ec2"
-  vpc_endpoint_type = "Interface"
+  # vpc_endpoint_type = "Interface"
 
   security_group_ids = [aws_security_group.EICE-SG.id]
 
