@@ -436,5 +436,9 @@ resource "aws_vpc_endpoint" "EC2_EndPoint" {
 
   subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id]
   private_dns_enabled = false
+
+    tags = {
+      Name = "EC2_EndPoint"
+    }
 }
 
