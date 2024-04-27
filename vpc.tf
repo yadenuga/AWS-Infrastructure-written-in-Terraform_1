@@ -374,7 +374,7 @@ resource "aws_lb" "ALB2" {
 
 # Create Launch template
 resource "aws_launch_template" "dev-launch-template" {
-  name = "dev-launch-template"
+  name = "Dev-launch-template"
   image_id = "ami-051f8a213df8bc089"
   instance_initiated_shutdown_behavior = "terminate"
   instance_type = "t2.micro"
@@ -388,7 +388,7 @@ resource "aws_launch_template" "dev-launch-template" {
   resource_type = "instance"
 
     tags = {
-      Name = "dev-launch-template"
+      Name = "Dev-launch-template"
     }
   }
 
@@ -429,8 +429,7 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
 resource "aws_ec2_instance_connect_endpoint" "EC2-EndPoint" {
   subnet_id        = aws_subnet.Private_App_Subnet_AZ1.id
   security_group_ids = [aws_security_group.EICE-SG.id]
-  preserve_client_ip  = false
- tags = {
+  tags = {
       Name = "EC2-EndPoint"
     }
 
