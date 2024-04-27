@@ -426,4 +426,12 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
 }
 
 
+resource "aws_ec2_instance_connect_endpoint" "EC2-EndPoint" {
+  subnet_id        = aws_subnet.Private_App_Subnet_AZ1.id
+  security_group_ids = [aws_security_group.EICE-SG.id]
+  preserve_client_ip  = false
+ tags = {
+      Name = "EC2-EndPoint"
+    }
 
+}
