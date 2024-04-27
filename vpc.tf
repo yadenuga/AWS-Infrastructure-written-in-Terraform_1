@@ -426,19 +426,4 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
 }
 
 
-# Create EC2 EndPoint
-resource "aws_vpc_endpoint" "EC2_EndPoint" {
-  vpc_id            = aws_vpc.Dev-VPC.id
-  service_name      = "com.amazonaws.us-east-1.ec2"
-  # vpc_endpoint_type = "Interface"
-
-  security_group_ids = [aws_security_group.EICE-SG.id]
-
-  subnet_ids          = [aws_subnet.Private_App_Subnet_AZ1.id]
-  private_dns_enabled = false
-
-    tags = {
-      Name = "EC2_EndPoint"
-    }
-}
 
