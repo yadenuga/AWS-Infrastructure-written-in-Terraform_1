@@ -425,7 +425,7 @@ resource "aws_autoscaling_attachment" "ASG_attachment" {
   lb_target_group_arn    = aws_lb_target_group.Dev-TG.arn
 }
 
-
+# Create EC2-EndPoint
 resource "aws_ec2_instance_connect_endpoint" "EC2-EndPoint" {
   subnet_id        = aws_subnet.Private_App_Subnet_AZ1.id
   security_group_ids = [aws_security_group.EICE-SG.id]
